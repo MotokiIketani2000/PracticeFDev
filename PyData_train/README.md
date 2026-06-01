@@ -1,39 +1,34 @@
 # pydata-train
 
-気象データの読み込み・分析用プロジェクト（uv + Python 3.14）。
+入門向けの簡易ETLパイプライン例です。生データ（CSV）を読み取り、簡単な前処理を行って保存します。
 
-## ディレクトリ構成
+構成の要点
+- 生データ: `data/raw/data.csv`
+- 抽出後（そのまま保存）: `data/tamed/tamed_1.csv`
+- 変換後（時系列＋平均気温）: `data/tamed/transformed.csv`
 
-```
-PyData_train/
-├── .venv/              # 仮想環境（uv が作成）
-├── data/
-│   ├── raw/            # 生データ（CSV など）
-│   └── weather.db
-├── src/
-│   └── extract.py      # CSV 読み込み
-├── main.py
-├── pyproject.toml
-└── uv.lock
-```
+実行方法（簡単）
 
-## 実行方法
-
-**必ず `PyData_train` ディレクトリで** 次のいずれかを使う。
+1. 仮想環境を作る / 有効化（推奨）
 
 ```bash
-# 推奨: 仮想環境を自動で使う
-uv run python src/extract.py
-
-# または venv を有効化してから
+python3 -m venv .venv
 source .venv/bin/activate
-python src/extract.py
+pip install -r requirements.txt  # または pyproject の依存をインストール
 ```
 
-macOS ではシステムに `python` コマンドが無いことが多い。`python3` や上記の `uv run` / 有効化後の `python` を使う。
-
-## 依存関係の追加
+2. パイプライン実行（プロジェクトルートで）
 
 ```bash
-uv add パッケージ名
+python main.py           # 抽出→変換 を実行して結果を保存します
+# 個別実行例:
+python main.py --step extract   # 抽出のみ
+python main.py --step transform # 変換のみ（事前に tamed の CSV が必要）
 ```
+
+学習のポイント
+- `src/extract.py` : 生データから必要な行・列を抽出する処理（文字コードやヘッダのばらつきを扱う）
+- `src/transform.py`: 日付や数値の変換、欠損除去、ソートなど基本的な前処理
+- `main.py`: パイプラインの実行とファイルの入出力を担当。初心者が ETL の流れを追いやすい構成にしています。
+
+問題があれば `data/raw/data.csv` のサンプルと一緒に相談してください。
